@@ -1,0 +1,2 @@
+# type-jam
+typing practice
