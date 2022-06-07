@@ -9,7 +9,7 @@ import Profile from '../routes/profile';
 
 const App = () => (
 	<div id="app">
-		<Header />
+//		<Header />
 		<Router>
 			<Home path="/" />
 			<Profile path="/profile/" user="me" />
