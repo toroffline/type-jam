@@ -1,12 +1,19 @@
 import { createContext } from "preact";
 import { useState, useContext, useEffect, useRef } from "preact/hooks";
-import { CharacterStatus, Mode, Scene } from "../../constants/commonConstant";
+import {
+  CharacterStatus,
+  FingerHint,
+  Hand_Mode,
+  Scene,
+} from "../../constants/commonConstant";
+import { CommonUtil } from "../../utils/commonUtil";
 import styles from "./style.css";
 
 const GameContext = createContext(null);
 
 function GameProvider(_props: any) {
   const [mode, setMode] = useState();
+  const [enableHint, setEnableHint] = useState(false);
   const [scene, setScene] = useState(Scene.Mode_Selecting);
 
   useEffect(() => {
@@ -16,11 +23,27 @@ function GameProvider(_props: any) {
   }, [scene, mode]);
 
   return (
-    <GameContext.Provider value={{ mode, setMode, scene, setScene }}>
+    <GameContext.Provider
+      value={{ mode, setMode, scene, setScene, enableHint, setEnableHint }}
+    >
       {_props.children}
     </GameContext.Provider>
   );
 }
+
+const ToggleHint = ({ enable, setEnable }) => {
+  return (
+    <div className="toggle-hint mb-2">
+      <button
+        type="button"
+        class={`nes-btn ${enable ? "is-success" : ""}`}
+        onClick={() => setEnable(!enable)}
+      >
+        {enable ? "Enable" : "Disable"} Hint
+      </button>
+    </div>
+  );
+};
 
 const useInput = (inputRef) => {
   const [value, setValue] = useState("");
@@ -32,19 +55,22 @@ const useInput = (inputRef) => {
       value={value}
       onKeyUp={(e) => setValue((e.target as HTMLInputElement).value)}
       type="text"
+      className="nes-input"
     />
   );
   return [value, input, clear];
 };
 
 const PlayGame = () => {
-  const { mode } = useContext(GameContext);
+  const { mode, enableHint } = useContext(GameContext);
   const inputRef = useRef(null);
   const [words, setWords] = useState<any>();
+  const [focusingChar, setFocusingChar] = useState();
+  const [progress, setProgress] = useState(0);
   const [typing, TypingInput, clearInput] = useInput(inputRef);
 
   const mockWords = {
-    [Mode.Left_Hand_Only]: [
+    [Hand_Mode.Left_Hand_Only]: [
       "rest",
       "baste",
       "sarge",
@@ -57,12 +83,13 @@ const PlayGame = () => {
   };
 
   const prepareWords = (words: string[]) => {
-    return words.map((word) => ({
+    return words.map((word, i) => ({
       value: word,
       valid: false,
-      characters: (word + " ").split("").map((w) => ({
+      characters: (word + " ").split("").map((w, j) => ({
         value: w,
-        status: CharacterStatus.Waiting,
+        status:
+          i === j && i === 0 ? CharacterStatus.Focusing : CharacterStatus.Wait,
       })),
     }));
   };
@@ -83,6 +110,7 @@ const PlayGame = () => {
     if (words) {
       const _typed = typing as string;
       let _words = [...words];
+      let allCorrect = 0;
       for (let i = 0; i < _words.length; i++) {
         if (!_words[i].valid) {
           let containIncorrect = false;
@@ -92,9 +120,19 @@ const PlayGame = () => {
               !containIncorrect
             ) {
               _words[i].characters[j].status = CharacterStatus.Correct;
+              allCorrect += 1;
             } else {
-              containIncorrect = true;
-              _words[i].characters[j].status = CharacterStatus.Incorrect;
+              if (_typed[j] === undefined) {
+                if (_typed.length === j) {
+                  _words[i].characters[j].status = CharacterStatus.Focusing;
+                  setFocusingChar(_words[i].characters[j].value);
+                } else {
+                  _words[i].characters[j].status = CharacterStatus.Wait;
+                }
+              } else {
+                containIncorrect = true;
+                _words[i].characters[j].status = CharacterStatus.Incorrect;
+              }
             }
           }
           if (
@@ -105,7 +143,20 @@ const PlayGame = () => {
             _words[i].valid = true;
             (clearInput as Function)();
           }
+          console.log(
+            allCorrect,
+            _words.map((word) => word.value).join(" ").length,
+            (allCorrect / _words.map((word) => word.value).join(" ").length) *
+              100
+          );
+          setProgress(
+            (prev) =>
+              (allCorrect / _words.map((word) => word.value).join(" ").length) *
+              100
+          );
           break;
+        } else {
+          allCorrect += _words[i].value.length + 1;
         }
       }
       setWords(_words);
@@ -113,28 +164,47 @@ const PlayGame = () => {
   }, [typing]);
 
   return (
-    <>
-      <div>
-        <>
-          {words
-            ? words
-                .map((word) => word.characters)
-                .map((_character, i) =>
-                  _character.map((character, j) => (
-                    <span
-                      id={`${character.value}-${i}-${j}`}
-                      key={`${character.value}-$-${i}-${j}-${character.valid}`}
-                      className={`${character.status}`}
-                    >
-                      {character.value}
-                    </span>
-                  ))
-                )
-            : "something wrong"}
-        </>
-      </div>
-      {TypingInput}
-    </>
+    <div className="play-zone">
+      <section class="nes-container with-title">
+        <h3 class="title">
+          {mode.charAt(0).toUpperCase() + mode.substr(1).toLowerCase()}
+        </h3>
+        <div id="inputs" class="item">
+          <div class="nes-field">
+            <label for="name_field">
+              {words
+                ? words
+                    .map((word) => word.characters)
+                    .map((_character, i) =>
+                      _character.map((character, j) => (
+                        <span
+                          id={`${character.value}-${i}-${j}`}
+                          key={`${character.value}-$-${i}-${j}-${character.valid}`}
+                          className={`nes-text ${character.status}`}
+                        >
+                          {character.value}
+                        </span>
+                      ))
+                    )
+                : "something wrong"}
+            </label>
+            {TypingInput}
+            <progress
+              class="nes-progress"
+              value={progress}
+              max="100"
+            ></progress>
+          </div>
+          {enableHint ? (
+            <div className="nes-fied">
+              hint : {CommonUtil.getFingerHint(focusingChar)}
+            </div>
+          ) : (
+            <></>
+          )}
+        </div>
+      </section>
+    </div>
   );
 };
 
@@ -144,16 +214,34 @@ const SceneSelectingMode = () => {
   const selectMode = (mode) => setMode(mode);
 
   return (
-    <div>
-      <button onClick={() => selectMode(Mode.Left_Hand_Only)}>left</button>
-      <button onClick={() => selectMode(Mode.Both_Hand)}>both</button>
-      <button onClick={() => selectMode(Mode.Right_Hand_Only)}>right</button>
+    <div className="btn-group-select-mode">
+      <button
+        type="button"
+        className="nes-btn is-primary"
+        onClick={() => selectMode(Hand_Mode.Left_Hand_Only)}
+      >
+        Left
+      </button>
+      <button
+        type="button"
+        className="nes-btn"
+        onClick={() => selectMode(Hand_Mode.Both_Hand)}
+      >
+        Both
+      </button>
+      <button
+        type="button"
+        className="nes-btn is-success"
+        onClick={() => selectMode(Hand_Mode.Right_Hand_Only)}
+      >
+        Right
+      </button>
     </div>
   );
 };
 
 const RenderScene = () => {
-  const { scene } = useContext(GameContext);
+  const { scene, enableHint, setEnableHint } = useContext(GameContext);
 
   const render = () => {
     switch (scene) {
@@ -166,7 +254,12 @@ const RenderScene = () => {
     }
   };
 
-  return render();
+  return (
+    <>
+      <ToggleHint enable={enableHint} setEnable={setEnableHint} />
+      {render()}
+    </>
+  );
 };
 
 const Home = () => {

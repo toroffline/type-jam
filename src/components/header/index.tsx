@@ -3,12 +3,12 @@ import styles from "./style.css";
 
 const Header = () => {
   return (
-    <header class={styles.header}>
-      <h1>Type Jam</h1>
-      <nav>
-        <Link href="/profile">My Profile</Link>
-      </nav>
-    </header>
+    <nav style="padding: 10px; border-bottom: 3px solid #ccc; margin-bottom: 25px;">
+      <h2>
+        <i class="nes-icon coin" style={{ marginRight: "30px" }} />
+        Type Jam
+      </h2>
+    </nav>
   );
 };
 

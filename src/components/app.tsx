@@ -7,6 +7,11 @@ import Header from "./header";
 
 const App = () => (
   <div id="app">
+    <link rel="stylesheet" href="../node_modules/nes.css/css/nes.min.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
     <Header />
     <Home />
     {/* <Router>
