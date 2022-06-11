@@ -1,7 +1,7 @@
-import { FingerHint, Hand_Mode } from "../constants/commonConstant";
+import { FingerHint } from "../constants/common";
 
 export namespace CommonUtil {
-  export const getFingerHint = (char) => {
+  export const getFingerHint = (char: string) => {
     const mapFinger_Character = {
       [FingerHint.Weaknest]: ["1", "q", "a", "z"],
       [FingerHint.Wedding]: ["2", "w", "s", "x"],
@@ -19,5 +19,9 @@ export namespace CommonUtil {
     }
 
     return resultFinger;
+  };
+
+  export const toTitleCase = (val: string) => {
+    return val.charAt(0).toUpperCase() + val.substring(1).toLowerCase();
   };
 }

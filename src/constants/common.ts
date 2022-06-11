@@ -1,9 +1,15 @@
 export enum Scene {
-  Mode_Selecting = "mode-selecting",
+  Hand_Mode_Selecting = "hand-mode-selecting",
   Game_Playing = "game-playing",
+  Mode_Selecting = "mode-selecting",
 }
 
-export enum Hand_Mode {
+export enum Mode {
+  Practice = "practice",
+  Multiplayer = "multiplayer",
+}
+
+export enum HandMode {
   Left_Hand_Only = "left",
   Both_Hand = "both",
   Right_Hand_Only = "right",
