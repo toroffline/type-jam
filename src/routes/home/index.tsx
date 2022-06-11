@@ -1,9 +1,10 @@
 import { h } from "preact";
+import { useMemo } from "preact/hooks";
 import GamePlay from "../../components/gamePlay";
 import ToggleButton from "../../components/toggleButton";
 import { HandMode, Mode, Scene } from "../../constants/common";
+import { StyleType } from "../../constants/style";
 import { GameProvider, useGameContext } from "../../contexts/game";
-import styles from "./style.css";
 
 const SceneSelectingHandMode = () => {
   const { setHandMode } = useGameContext();
@@ -70,8 +71,51 @@ const SceneSelectingMode = () => {
   );
 };
 
+const Options = () => {
+  const { options, flipHintValue, resetPractice, nextPractice } =
+    useGameContext();
+
+  return (
+    <section class="nes-container with-title">
+      <h3 class="title">Options</h3>
+      <div class="nes-field is-inline">
+        {options.hint.visible && (
+          <ToggleButton
+            title="Hint"
+            enable={options.hint.value}
+            onClick={(_value) => flipHintValue()}
+            text={{ true: "Enable", false: "Disable" }}
+            style={{ true: StyleType.Success, false: StyleType.Normal }}
+            disabled={options.hint.disabled}
+          />
+        )}
+        {options.resetPractice.visible && (
+          <ToggleButton
+            title="Reset"
+            enable={options.resetPractice.value}
+            onClick={(_value) => resetPractice()}
+            glowing={options.resetPractice.blinking}
+          />
+        )}
+        {options.nextPractice.visible && (
+          <ToggleButton
+            title="Next Practice"
+            enable={options.nextPractice.value}
+            onClick={(_value) => nextPractice()}
+          />
+        )}
+      </div>
+    </section>
+  );
+};
+
 const RenderScene = () => {
-  const { scene, enableHint, setEnableHint, visibleHint } = useGameContext();
+  const { scene, options } = useGameContext();
+
+  const visibleOptions = useMemo(
+    () => Object.entries(options).some(([_key, val]) => val.visible),
+    [options]
+  );
 
   const render = () => {
     switch (scene) {
@@ -79,8 +123,12 @@ const RenderScene = () => {
         return <SceneSelectingMode />;
       case Scene.Hand_Mode_Selecting:
         return <SceneSelectingHandMode />;
+      case Scene.Prepare_Game:
+        return <div>loading...</div>;
       case Scene.Game_Playing:
         return <GamePlay />;
+      case Scene.Finished_Practice_Race:
+        return <div>Continue ?</div>;
       default:
         return <div>Something wrong</div>;
     }
@@ -88,14 +136,8 @@ const RenderScene = () => {
 
   return (
     <>
-      {visibleHint && (
-        <ToggleButton
-          enable={enableHint}
-          setEnable={setEnableHint}
-          text={{ true: "Enable", false: "Disable" }}
-        />
-      )}
-      {render()}
+      <div className="">{render()}</div>
+      <div className="options">{visibleOptions && <Options />}</div>
     </>
   );
 };
@@ -103,7 +145,7 @@ const RenderScene = () => {
 const Home = () => {
   return (
     <GameProvider>
-      <div class={styles.home}>
+      <div className="home">
         <RenderScene />
       </div>
     </GameProvider>

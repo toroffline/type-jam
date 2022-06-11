@@ -1,7 +1,7 @@
 import { FingerHint } from "../constants/common";
 
 export namespace CommonUtil {
-  export const getFingerHint = (char: string) => {
+  export function getFingerHint(char: string) {
     const mapFinger_Character = {
       [FingerHint.Weaknest]: ["1", "q", "a", "z"],
       [FingerHint.Wedding]: ["2", "w", "s", "x"],
@@ -19,9 +19,24 @@ export namespace CommonUtil {
     }
 
     return resultFinger;
-  };
+  }
 
-  export const toTitleCase = (val: string) => {
+  export function toTitleCase(val: string) {
     return val.charAt(0).toUpperCase() + val.substring(1).toLowerCase();
-  };
+  }
+
+  export function extractMillseconds(timeMs: number) {
+    let milliseconds = timeMs % 1000,
+      seconds = Math.floor((timeMs / 1000) % 60),
+      minutes = Math.floor(timeMs / (1000 * 60));
+
+    minutes = minutes < 10 ? 0 + minutes : minutes;
+    seconds = seconds < 10 ? 0 + seconds : seconds;
+
+    return {
+      milliseconds,
+      seconds,
+      minutes,
+    };
+  }
 }

@@ -1,7 +1,9 @@
 export enum Scene {
   Hand_Mode_Selecting = "hand-mode-selecting",
+  Prepare_Game = "prepare-game",
   Game_Playing = "game-playing",
   Mode_Selecting = "mode-selecting",
+  Finished_Practice_Race = "finished-practice-race",
 }
 
 export enum Mode {

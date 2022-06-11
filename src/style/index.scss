@@ -20,20 +20,39 @@ body {
 
 #app {
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  .home {
+    padding: 40px 20px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+
+    flex-direction: column;
+    .options {
+      margin-top: auto;
+    }
+  }
 }
 
 .btn-group-select-mode .nes-btn {
   margin-right: 10px;
 }
 
+.options {
+  button.toggle-option:not(:last-child) {
+    margin-right: 1rem;
+  }
+}
+
 @keyframes blinking {
   0% {
     color: #f7d51d;
   }
-  40% {
+  50% {
     color: black;
   }
-  80% {
+  100% {
     color: #f7d51d;
   }
 }
@@ -45,6 +64,29 @@ body {
   margin-bottom: 10px;
 }
 
-.item > * {
+.item > *:not(:last-child) {
   margin-bottom: 1.5rem !important;
+}
+
+.d-none {
+  display: none;
+}
+
+.title-end {
+  margin-left: auto !important;
+}
+
+@keyframes glowing {
+  0% {
+    box-shadow: 0 0 20px transparent;
+  }
+  50% {
+    box-shadow: 0 0 30px #21c7ed;
+  }
+  100% {
+    box-shadow: 0 0 20px transparent;
+  }
+}
+.toggle-option.glowing {
+  animation: glowing 1.5s infinite, blinking 1.5s infinite;
 }
