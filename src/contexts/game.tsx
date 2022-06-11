@@ -1,6 +1,23 @@
 import { createContext, h } from "preact";
-import { StateUpdater, useContext, useEffect, useState } from "preact/hooks";
+import {
+  StateUpdater,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "preact/hooks";
 import { CharacterStatus, HandMode, Mode, Scene } from "../constants/common";
+import { CommonUtil } from "../utils/common";
+import { mockWords as MockWords } from "../utils/mock/mockData";
+
+interface StatsSummary {
+  timeUsed: {
+    milliseconds: number;
+    seconds: number;
+    minutes: number;
+  };
+  accuracy: number;
+}
 
 type OptionValueType = boolean;
 
@@ -37,11 +54,13 @@ interface Game {
   options: Options;
 
   words: any;
+  statsSummary: StatsSummary;
 
   flipHintValue: () => void;
   finishPracticeRace: () => void;
   resetPractice: () => void;
   nextPractice: () => void;
+  startPracticeRace: () => void;
 }
 
 const GameContext = createContext<Game>(null);
@@ -58,35 +77,47 @@ export function GameProvider(props: any) {
   const [scene, setScene] = useState(Scene.Mode_Selecting);
   const [options, _setOptions] = useState(defaultOptions);
   const [words, setWords] = useState(null);
-  const [playing, setPlaying] = useState(false);
+  const [startTime, setStartTime] = useState(null);
+  const [finishTime, setFinishTime] = useState(null);
+  const [statsSummary, setStatsSummary] = useState<StatsSummary>(null);
+  const wordCount = 1;
 
-  const mockWords = {
-    [HandMode.Left_Hand_Only]: [
-      "rest",
-      //  "baste",
-      //  "sarge",
-      //  "badger",
-      //  "dab",
-      //  "bad",
-      //  "brew",
-      //  "brave",
-    ],
+  const prepareWords = (words: string[], count: number) => {
+    return words
+      .sort(() => 0.5 - Math.random())
+      .slice(0, count)
+      .map((word, i) => ({
+        value: word,
+        valid: false,
+        characters: (word + (i === count - 1 ? "" : " "))
+          .split("")
+          .map((w, j) => ({
+            value: w,
+            status:
+              i === j && i === 0
+                ? CharacterStatus.Focusing
+                : CharacterStatus.Wait,
+          })),
+      }));
   };
 
-  const prepareWords = (words: string[]) => {
-    return words.map((word, i) => ({
-      value: word,
-      valid: false,
-      characters: (word + (i === words.length - 1 ? "" : " "))
-        .split("")
-        .map((w, j) => ({
-          value: w,
-          status:
-            i === j && i === 0
-              ? CharacterStatus.Focusing
-              : CharacterStatus.Wait,
-        })),
-    }));
+  const calculateStatsSummary = (startTime, finishTime) => {
+    console.log(startTime, finishTime);
+    const dateDiff = finishTime.getTime() - startTime.getTime();
+    const { milliseconds, seconds, minutes } =
+      CommonUtil.extractMillseconds(dateDiff);
+    const result = {
+      timeUsed: {
+        milliseconds,
+        seconds,
+        minutes,
+      },
+      accuracy: 0,
+    };
+
+    console.log(result);
+
+    return result;
   };
 
   const setOption: SetOptionFunction = (optionType, key, value) => {
@@ -99,7 +130,15 @@ export function GameProvider(props: any) {
     setOption("hint", "value", !options.hint.value);
   }
 
+  function startPracticeRace() {
+    setStartTime(new Date());
+  }
+
   function finishPracticeRace() {
+    const finishTime = new Date();
+    setFinishTime(finishTime);
+    setStatsSummary(calculateStatsSummary(startTime, finishTime));
+
     setScene(Scene.Finished_Practice_Race);
   }
 
@@ -118,7 +157,6 @@ export function GameProvider(props: any) {
   }
 
   useEffect(() => {
-    console.log(scene);
     switch (scene) {
       case Scene.Mode_Selecting:
         if (mode) {
@@ -137,8 +175,7 @@ export function GameProvider(props: any) {
 
       case Scene.Prepare_Game:
         if (handMode) {
-          setWords(prepareWords(mockWords[handMode]));
-          setPlaying(true);
+          setWords(prepareWords(MockWords[handMode], wordCount));
 
           setScene(Scene.Game_Playing);
         }
@@ -149,14 +186,9 @@ export function GameProvider(props: any) {
         if (options.resetPractice.value) {
           handleResetPractice();
         }
-        //  if (!playing && handMode) {
-        //  }
-        // setOption("nextPractice", "value", false);
-        // setOption("resetPractice", "value", false);
         break;
 
       case Scene.Finished_Practice_Race:
-        setPlaying(false);
         if (options.resetPractice.value) {
           handleResetPractice();
         }
@@ -176,11 +208,13 @@ export function GameProvider(props: any) {
         options,
 
         words,
+        statsSummary,
 
         flipHintValue,
         finishPracticeRace,
         resetPractice,
         nextPractice,
+        startPracticeRace,
       }}
     >
       {props.children}

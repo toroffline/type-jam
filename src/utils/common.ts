@@ -39,4 +39,8 @@ export namespace CommonUtil {
       minutes,
     };
   }
+
+  export function displayTime(ms, s, m, fixed) {
+    return `${s}:${ms.toString().slice(0, fixed)}`;
+  }
 }

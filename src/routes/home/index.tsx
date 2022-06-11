@@ -1,6 +1,7 @@
 import { h } from "preact";
 import { useMemo } from "preact/hooks";
 import GamePlay from "../../components/gamePlay";
+import PracticeSummary from "../../components/practiceSummary";
 import ToggleButton from "../../components/toggleButton";
 import { HandMode, Mode, Scene } from "../../constants/common";
 import { StyleType } from "../../constants/style";
@@ -72,8 +73,7 @@ const SceneSelectingMode = () => {
 };
 
 const Options = () => {
-  const { options, flipHintValue, resetPractice, nextPractice } =
-    useGameContext();
+  const { options, flipHintValue } = useGameContext();
 
   return (
     <section class="nes-container with-title">
@@ -87,21 +87,6 @@ const Options = () => {
             text={{ true: "Enable", false: "Disable" }}
             style={{ true: StyleType.Success, false: StyleType.Normal }}
             disabled={options.hint.disabled}
-          />
-        )}
-        {options.resetPractice.visible && (
-          <ToggleButton
-            title="Reset"
-            enable={options.resetPractice.value}
-            onClick={(_value) => resetPractice()}
-            glowing={options.resetPractice.blinking}
-          />
-        )}
-        {options.nextPractice.visible && (
-          <ToggleButton
-            title="Next Practice"
-            enable={options.nextPractice.value}
-            onClick={(_value) => nextPractice()}
           />
         )}
       </div>
@@ -128,7 +113,7 @@ const RenderScene = () => {
       case Scene.Game_Playing:
         return <GamePlay />;
       case Scene.Finished_Practice_Race:
-        return <div>Continue ?</div>;
+        return <PracticeSummary />;
       default:
         return <div>Something wrong</div>;
     }

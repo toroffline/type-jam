@@ -45,6 +45,10 @@ body {
   }
 }
 
+.nes-field button.nes-btn.toggle-option:not(:last-child) {
+  margin-right: 1rem;
+}
+
 @keyframes blinking {
   0% {
     color: #f7d51d;
@@ -61,7 +65,7 @@ body {
 }
 
 .mb-2 {
-  margin-bottom: 10px;
+  margin-bottom: 2rem;
 }
 
 .item > *:not(:last-child) {
@@ -74,6 +78,18 @@ body {
 
 .title-end {
   margin-left: auto !important;
+}
+
+table.nes-table {
+  width: 90%;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  tbody tr {
+    &:hover {
+      color: #fff;
+      background: #212529;
+    }
+  }
 }
 
 @keyframes glowing {

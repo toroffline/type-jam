@@ -7,14 +7,19 @@ import { CommonUtil } from "../../utils/common";
 import useInput from "../hooks/input";
 
 const GamePlay = () => {
-  const { words: _words, options, finishPracticeRace } = useGameContext();
+  const {
+    words: _words,
+    options,
+    finishPracticeRace,
+    startPracticeRace: start,
+  } = useGameContext();
   // const { milliseconds, seconds, counting, setCounting, resetCounting } =
   //   useTimeCounter({ countType: "up" });
   const {
     counting: countingDownStart,
     setCounting: setCountingDownStart,
     seconds: secondsDown,
-  } = useTimeCounter({ countType: "down", initTime: { s: 3 } });
+  } = useTimeCounter({ countType: "down", initTime: { s: 1 } });
 
   const inputRef = useRef(null);
   const dialogCountDownStartRef = useRef<HTMLDialogElement>(null);
@@ -83,6 +88,7 @@ const GamePlay = () => {
       dialogCountDownStartRef.current.close();
       if (inputRef && inputRef.current) {
         inputRef.current.focus();
+        start();
       }
     }
   }, [secondsDown]);
