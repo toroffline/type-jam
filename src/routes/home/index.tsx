@@ -73,7 +73,8 @@ const SceneSelectingMode = () => {
 };
 
 const Options = () => {
-  const { options, flipHintValue } = useGameContext();
+  const { options, flipHintValue, resetPractice, nextPractice } =
+    useGameContext();
 
   return (
     <section class="nes-container with-title">
@@ -87,6 +88,21 @@ const Options = () => {
             text={{ true: "Enable", false: "Disable" }}
             style={{ true: StyleType.Success, false: StyleType.Normal }}
             disabled={options.hint.disabled}
+          />
+        )}
+        {options.resetPractice.visible && (
+          <ToggleButton
+            title="Reset"
+            enable={options.resetPractice.value}
+            onClick={(_value) => resetPractice()}
+            glowing={options.resetPractice.blinking}
+          />
+        )}
+        {options.nextPractice.visible && (
+          <ToggleButton
+            title="Next"
+            enable={options.nextPractice.value}
+            onClick={(_value) => nextPractice()}
           />
         )}
       </div>

@@ -23,7 +23,9 @@ const GamePlay = () => {
 
   const inputRef = useRef(null);
   const dialogCountDownStartRef = useRef<HTMLDialogElement>(null);
-  const [words, setWords] = useState(_words);
+  const [words, setWords] = useState(
+    _words ? CommonUtil.deepCloneArray(_words) : null
+  );
   const [focusingChar, setFocusingChar] = useState();
   const [progress, setProgress] = useState(0);
   const [typing, TypingInput, clearInput] = useInput(inputRef);

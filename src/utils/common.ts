@@ -40,7 +40,11 @@ export namespace CommonUtil {
     };
   }
 
-  export function displayTime(ms, s, m, fixed) {
+  export function displayTime(ms: number, s: number, m: number, fixed: number) {
     return `${s}:${ms.toString().slice(0, fixed)}`;
+  }
+
+  export function deepCloneArray(arr: any[]) {
+    return JSON.parse(JSON.stringify(arr));
   }
 }

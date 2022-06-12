@@ -26,7 +26,7 @@ const PracticeSummary = () => {
           <tbody>
             <tr>
               <td>Time</td>
-              <td>{CommonUtil.displayTime(milliseconds, seconds, 0, 2)}</td>
+              <td>{CommonUtil.displayTime(milliseconds, seconds, 0, 2)} Sec</td>
             </tr>
             <tr>
               <td>Accuracy</td>
@@ -34,24 +34,6 @@ const PracticeSummary = () => {
             </tr>
           </tbody>
         </table>
-      </div>
-
-      <div class="nes-field">
-        {options.resetPractice.visible && (
-          <ToggleButton
-            title="Reset"
-            enable={options.resetPractice.value}
-            onClick={(_value) => resetPractice()}
-            glowing={options.resetPractice.blinking}
-          />
-        )}
-        {options.nextPractice.visible && (
-          <ToggleButton
-            title="Next Practice"
-            enable={options.nextPractice.value}
-            onClick={(_value) => nextPractice()}
-          />
-        )}
       </div>
     </div>
   );

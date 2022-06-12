@@ -1,4 +1,5 @@
 @import "../../node_modules/nes.css/css/nes.css";
+@import "./animation.scss";
 
 html,
 body {
@@ -49,21 +50,6 @@ body {
   margin-right: 1rem;
 }
 
-@keyframes blinking {
-  0% {
-    color: #f7d51d;
-  }
-  50% {
-    color: black;
-  }
-  100% {
-    color: #f7d51d;
-  }
-}
-.nes-text.is-warning {
-  animation: blinking 1.5s infinite;
-}
-
 .mb-2 {
   margin-bottom: 2rem;
 }
@@ -92,17 +78,6 @@ table.nes-table {
   }
 }
 
-@keyframes glowing {
-  0% {
-    box-shadow: 0 0 20px transparent;
-  }
-  50% {
-    box-shadow: 0 0 30px #21c7ed;
-  }
-  100% {
-    box-shadow: 0 0 20px transparent;
-  }
-}
 .toggle-option.glowing {
   animation: glowing 1.5s infinite, blinking 1.5s infinite;
 }

@@ -1,0 +1,26 @@
+@keyframes blinking {
+  0% {
+    color: #f7d51d;
+  }
+  50% {
+    color: black;
+  }
+  100% {
+    color: #f7d51d;
+  }
+}
+.nes-text.is-warning {
+  animation: blinking 1.5s infinite;
+}
+
+@keyframes glowing {
+  0% {
+    box-shadow: 0 0 20px transparent;
+  }
+  50% {
+    box-shadow: 0 0 30px #21c7ed;
+  }
+  100% {
+    box-shadow: 0 0 20px transparent;
+  }
+}

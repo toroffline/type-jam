@@ -101,8 +101,7 @@ export function GameProvider(props: any) {
       }));
   };
 
-  const calculateStatsSummary = (startTime, finishTime) => {
-    console.log(startTime, finishTime);
+  const calculateStatsSummary = (startTime: Date, finishTime: Date) => {
     const dateDiff = finishTime.getTime() - startTime.getTime();
     const { milliseconds, seconds, minutes } =
       CommonUtil.extractMillseconds(dateDiff);
@@ -146,17 +145,34 @@ export function GameProvider(props: any) {
     setOption("resetPractice", "value", true);
   }
 
-  function handleResetPractice() {
-    setOption("resetPractice", "value", false);
-
-    setScene(Scene.Prepare_Game);
-  }
-
   function nextPractice() {
     setOption("nextPractice", "value", true);
   }
 
+  function handleTriggerOptions(option: OptionsType) {
+    setOption(option, "value", false);
+    switch (option) {
+      case "resetPractice":
+        setScene(Scene.Prepare_Game);
+        break;
+      case "nextPractice":
+        setWords(null);
+
+        setScene(Scene.Prepare_Game);
+        break;
+    }
+  }
+
+  function listenOptionWhilePractice() {
+    if (options.resetPractice.value) {
+      handleTriggerOptions("resetPractice");
+    } else if (options.nextPractice.value) {
+      handleTriggerOptions("nextPractice");
+    }
+  }
+
   useEffect(() => {
+    console.log(scene);
     switch (scene) {
       case Scene.Mode_Selecting:
         if (mode) {
@@ -175,7 +191,9 @@ export function GameProvider(props: any) {
 
       case Scene.Prepare_Game:
         if (handMode) {
-          setWords(prepareWords(MockWords[handMode], wordCount));
+          if (!words) {
+            setWords(prepareWords(MockWords[handMode], wordCount));
+          }
 
           setScene(Scene.Game_Playing);
         }
@@ -183,15 +201,11 @@ export function GameProvider(props: any) {
         break;
 
       case Scene.Game_Playing:
-        if (options.resetPractice.value) {
-          handleResetPractice();
-        }
+        listenOptionWhilePractice();
         break;
 
       case Scene.Finished_Practice_Race:
-        if (options.resetPractice.value) {
-          handleResetPractice();
-        }
+        listenOptionWhilePractice();
         break;
     }
   }, [scene, mode, handMode, options]);
