@@ -1,0 +1,18 @@
+{
+  "name": "type-jam-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://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@github.com/toroffline/type-jam.git",
+  "author": "Narkkarux Tripiyaratana",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "dev": "nodemon index.js"
+  },
+  "devDependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "nodemon": "^3.0.1",
+    "socket.io": "^4.7.2"
+  }
+}
