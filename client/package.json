@@ -1,21 +1,17 @@
 {
-  "name": "client",
-  "private": true,
+  "name": "template-vite",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "preview": "vite preview"
   },
-  "dependencies": {
-    "preact": "^10.16.0"
-  },
   "devDependencies": {
-    "@preact/preset-vite": "^2.5.0",
-    "@types/node": "^20.8.4",
-    "socket.io-client": "^4.7.2",
-    "typescript": "^5.0.2",
-    "vite": "^4.4.5"
+    "vite": "^5.1.6"
+  },
+  "dependencies": {
+    "phaser": "^3.80.1",
+    "template-vite": "file:"
   }
 }
